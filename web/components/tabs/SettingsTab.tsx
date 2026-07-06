@@ -1,9 +1,14 @@
 "use client";
 
 import { gatewayProfiles as fallbackGateways } from "@/lib/data";
-import { fetchGateways, syncInventoryToGit } from "@/lib/api";
+import {
+  fetchGateways,
+  fetchSyncConfig,
+  saveSyncConfig,
+  syncInventoryToGit,
+} from "@/lib/api";
 import { SectionHeader } from "../ui";
-import { GitBranch, Loader2 } from "lucide-react";
+import { GitBranch, Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { GatewayProfile } from "@/lib/types";
 
@@ -16,12 +21,33 @@ export function SettingsTab({
   const [alertThreshold, setAlertThreshold] = useState("5");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [gateways, setGateways] = useState<GatewayProfile[]>(fallbackGateways);
+  const [autoSync, setAutoSync] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
 
   useEffect(() => {
     fetchGateways().then(setGateways).catch(() => {});
+    fetchSyncConfig()
+      .then((c) => setAutoSync(c.autoSync))
+      .catch(() => {});
   }, []);
+
+  const handleAutoSyncToggle = async (enabled: boolean) => {
+    setAutoSync(enabled);
+    try {
+      await saveSyncConfig({
+        autoSync: enabled,
+        remote: "origin",
+        branch: "main",
+      });
+      onSyncMessage?.(
+        enabled ? "Auto-sync enabled" : "Auto-sync disabled"
+      );
+    } catch {
+      setAutoSync(!enabled);
+      onSyncMessage?.("Failed to update auto-sync setting.");
+    }
+  };
 
   const handleGitSync = async () => {
     setSyncing(true);
@@ -125,24 +151,56 @@ export function SettingsTab({
         <div className="card space-y-4">
           <h3 className="flex items-center gap-2 font-medium">
             <GitBranch className="h-4 w-4 text-accent" />
-            Git Inventory Sync
+            Git Auto-Sync
           </h3>
+
+          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-[#2a3548] bg-surface p-4">
+            <div>
+              <div className="font-medium">Auto-sync to GitHub</div>
+              <div className="text-xs text-[#8b9cb3]">
+                Commit & push inventory on every save
+              </div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={autoSync}
+              onClick={() => handleAutoSyncToggle(!autoSync)}
+              className={`relative h-6 w-11 rounded-full transition ${
+                autoSync ? "bg-accent" : "bg-[#2a3548]"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition ${
+                  autoSync ? "left-5" : "left-0.5"
+                }`}
+              />
+            </button>
+          </label>
+
           <p className="text-sm text-[#8b9cb3]">
-            Inventory is stored in <code className="text-accent">inventory/</code> at
-            the project root. Save changes in the Machines tab, then commit to git
-            to share with your team.
+            Remote:{" "}
+            <a
+              href="https://github.com/mnabeelam/myapp"
+              target="_blank"
+              rel="noreferrer"
+              className="text-accent hover:underline"
+            >
+              github.com/mnabeelam/myapp
+            </a>
           </p>
+
           <button
-            className="btn-primary flex items-center gap-2 text-sm"
+            className="btn-secondary flex items-center gap-2 text-sm"
             onClick={handleGitSync}
             disabled={syncing}
           >
             {syncing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <GitBranch className="h-4 w-4" />
+              <RefreshCw className="h-4 w-4" />
             )}
-            Commit Inventory to Git
+            Sync Now (manual)
           </button>
           {syncResult && (
             <p className="text-xs text-[#8b9cb3]">{syncResult}</p>

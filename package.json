@@ -8,6 +8,7 @@
     "build": "npm run build --prefix web",
     "start": "npm run start --prefix web",
     "install:web": "npm install --prefix web",
-    "inventory:sync": "git add inventory/ && git commit -m \"sync: update inventory\""
+    "inventory:sync": "git add inventory/ && git commit -m \"sync: update inventory\"",
+    "git:status": "git ls-files inventory/ && git remote -v && git status"
   }
 }

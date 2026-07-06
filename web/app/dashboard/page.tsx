@@ -45,9 +45,17 @@ export default function DashboardPage() {
     setMachines(updated);
     setSaving(true);
     try {
-      await saveMachines(updated);
-      setSyncMsg("Inventory saved to inventory/machines.json");
-      setTimeout(() => setSyncMsg(null), 3000);
+      const { sync } = await saveMachines(updated);
+      if (sync?.pushed) {
+        setSyncMsg("Saved & auto-synced to GitHub");
+      } else if (sync?.committed) {
+        setSyncMsg("Saved & committed — push pending");
+      } else if (sync) {
+        setSyncMsg(sync.message);
+      } else {
+        setSyncMsg("Inventory saved locally");
+      }
+      setTimeout(() => setSyncMsg(null), 4000);
     } catch {
       setSyncMsg("Failed to save inventory.");
     } finally {
@@ -200,7 +208,7 @@ export default function DashboardPage() {
 
       <footer className="border-t border-[#2a3548] px-6 py-2 text-center text-xs text-[#5a6a82]">
         <GitBranch className="mr-1 inline h-3 w-3" />
-        Inventory synced from <code className="text-accent">inventory/</code> — commit to git to share
+        Inventory auto-sync enabled — changes push to <code className="text-accent">github.com/mnabeelam/myapp</code>
       </footer>
     </div>
   );

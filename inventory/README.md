@@ -7,8 +7,15 @@ Lab machine and network inventory for **myapp**. These JSON files are the source
 | `machines.json` | Lab PCs and servers |
 | `proxies.json` | Proxy servers |
 | `gateways.json` | Gateway profiles |
+| `config.json` | Auto-sync to GitHub (on by default) |
 
-## Sync workflow
+## Auto-sync (enabled)
+
+When `config.json` has `"autoSync": true`, every inventory save in the dashboard automatically **commits and pushes** to GitHub.
+
+Toggle in **Settings → Git Auto-Sync**, or edit `config.json` directly.
+
+## Manual sync workflow
 
 1. Edit inventory in the dashboard (Machines tab) — changes save here automatically.
 2. Commit and push to share with your team:

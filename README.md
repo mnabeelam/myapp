@@ -59,6 +59,41 @@ myapp/
 └── package.json     # Root scripts (npm run dev)
 ```
 
+## Push to GitHub (inventory included)
+
+Inventory is in git locally at `inventory/`. If it does not appear on GitHub, the repo was likely never pushed.
+
+```powershell
+cd "e:\Nabeel Data\myapp"
+
+# 1. Add your GitHub repo (replace with your URL)
+git remote add origin https://github.com/YOUR_USERNAME/myapp.git
+
+# 2. Push everything — including inventory/
+git push -u origin main
+```
+
+Verify before pushing:
+
+```powershell
+git ls-files inventory/
+# Should list: machines.json, proxies.json, gateways.json, README.md
+```
+
+If `git remote add` fails because origin exists, update the URL:
+
+```powershell
+git remote set-url origin https://github.com/YOUR_USERNAME/myapp.git
+git push -u origin main
+```
+
+After editing inventory in the dashboard, commit and push again:
+
+```powershell
+npm run inventory:sync
+git push
+```
+
 ## Documentation
 
 See [doc/00-index.md](./doc/00-index.md) for the full step-by-step build guide.
