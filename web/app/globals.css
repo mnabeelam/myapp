@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0e14;
+  --surface: #0f1419;
+  --raised: #1a2332;
+  --border: #2a3548;
+  --text: #e8edf4;
+  --muted: #8b9cb3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-[#2a3548] bg-surface-raised p-5;
+  }
+
+  .btn-primary {
+    @apply rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply rounded-lg border border-[#2a3548] bg-surface-overlay px-4 py-2 text-sm font-medium text-[#e8edf4] transition hover:border-accent/50 hover:bg-accent-muted;
+  }
+
+  .btn-danger {
+    @apply rounded-lg bg-red-600/20 px-4 py-2 text-sm font-medium text-red-400 transition hover:bg-red-600/30;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-[#2a3548] bg-surface px-3 py-2 text-sm text-[#e8edf4] placeholder-[#5a6a82] outline-none transition focus:border-accent focus:ring-1 focus:ring-accent;
+  }
+
+  .label-field {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#8b9cb3];
+  }
+
+  .tab-active {
+    @apply border-b-2 border-accent text-accent;
+  }
+
+  .tab-inactive {
+    @apply border-b-2 border-transparent text-[#8b9cb3] hover:text-[#e8edf4];
+  }
+
+  .status-dot-up {
+    @apply h-2.5 w-2.5 rounded-full bg-status-up shadow-[0_0_8px_rgba(34,197,94,0.6)];
+  }
+
+  .status-dot-down {
+    @apply h-2.5 w-2.5 rounded-full bg-status-down shadow-[0_0_8px_rgba(239,68,68,0.6)];
+  }
+
+  .status-dot-unknown {
+    @apply h-2.5 w-2.5 rounded-full bg-[#5a6a82];
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+::-webkit-scrollbar-thumb {
+  background: #2a3548;
+  border-radius: 3px;
+}

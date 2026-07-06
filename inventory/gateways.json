@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "name": "Default Lab Gateway",
+    "gatewayIp": "192.168.1.1",
+    "dnsServers": ["8.8.8.8", "8.8.4.4"],
+    "subnet": "192.168.1.0/24"
+  },
+  {
+    "id": "2",
+    "name": "Filtered Proxy Gateway",
+    "gatewayIp": "192.168.1.254",
+    "dnsServers": ["192.168.1.20"],
+    "subnet": "192.168.2.0/24"
+  }
+]

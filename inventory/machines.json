@@ -1,0 +1,54 @@
+[
+  {
+    "id": "1",
+    "hostname": "lab-pc-01",
+    "ip": "192.168.1.10",
+    "mac": "AA:BB:CC:DD:EE:01",
+    "os": "linux",
+    "role": "workstation",
+    "tags": ["lab-a", "dev"],
+    "status": "up",
+    "latencyMs": 2,
+    "lastChecked": "30 sec ago",
+    "subnet": "192.168.1.0/24"
+  },
+  {
+    "id": "2",
+    "hostname": "lab-pc-02",
+    "ip": "192.168.1.11",
+    "mac": "AA:BB:CC:DD:EE:02",
+    "os": "windows",
+    "role": "workstation",
+    "tags": ["lab-a"],
+    "status": "down",
+    "latencyMs": null,
+    "lastChecked": "30 sec ago",
+    "subnet": "192.168.1.0/24"
+  },
+  {
+    "id": "3",
+    "hostname": "lab-pc-03",
+    "ip": "192.168.1.12",
+    "mac": "AA:BB:CC:DD:EE:03",
+    "os": "linux",
+    "role": "server",
+    "tags": ["lab-b", "testing"],
+    "status": "up",
+    "latencyMs": 5,
+    "lastChecked": "30 sec ago",
+    "subnet": "192.168.1.0/24"
+  },
+  {
+    "id": "4",
+    "hostname": "lab-server-01",
+    "ip": "192.168.1.15",
+    "mac": "AA:BB:CC:DD:EE:04",
+    "os": "linux",
+    "role": "server",
+    "tags": ["infra"],
+    "status": "up",
+    "latencyMs": 1,
+    "lastChecked": "30 sec ago",
+    "subnet": "192.168.1.0/24"
+  }
+]

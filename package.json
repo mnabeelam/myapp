@@ -1,0 +1,13 @@
+{
+  "name": "myapp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local lab network control panel with git-synced inventory",
+  "scripts": {
+    "dev": "npm run dev --prefix web",
+    "build": "npm run build --prefix web",
+    "start": "npm run start --prefix web",
+    "install:web": "npm install --prefix web",
+    "inventory:sync": "git add inventory/ && git commit -m \"sync: update inventory\""
+  }
+}

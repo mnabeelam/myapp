@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1",
+    "hostname": "proxy-01",
+    "ip": "192.168.1.20",
+    "port": 3128,
+    "type": "squid",
+    "status": "up",
+    "latencyMs": 1,
+    "lastChecked": "60 sec ago"
+  },
+  {
+    "id": "2",
+    "hostname": "proxy-02",
+    "ip": "192.168.1.21",
+    "port": 8080,
+    "type": "nginx",
+    "status": "up",
+    "latencyMs": 3,
+    "lastChecked": "60 sec ago"
+  }
+]
