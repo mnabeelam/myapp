@@ -1,99 +1,83 @@
 # myapp
 
-Local lab network control panel — monitor machines, manage inventory, and sync config via git.
+**Enterprise lab network operations platform** — monitor, control, and visualize local networks at scale with 3D reports, high security, and commercial multi-tenancy.
+
+## Architecture
+
+```
+Next.js 15 (UI + 3D Reports)
+        │
+NestJS 11 API ── PostgreSQL/TimescaleDB + Redis
+        │
+Go Agent (LAN) ── ping, WoL, SSH, WinRM
+```
 
 ## Quick start
 
 ```powershell
-# Install dependencies
-npm run install:web
+# 1. Infrastructure
+docker compose up -d
 
-# Run locally
-npm run dev
+# 2. Install dependencies
+npm run install:all
+
+# 3. API setup
+copy services\api\.env.example services\api\.env
+npm run db:migrate --prefix services/api
+
+# 4. Run everything
+npm run dev:all
 ```
 
-Open **http://localhost:3000**
+| Service | URL |
+|---------|-----|
+| Web UI | http://localhost:3000 |
+| Dashboard | http://localhost:3000/dashboard |
+| **Reports 3D** | Dashboard → Reports 3D tab |
+| API | http://localhost:4000/api/v1 |
+| Swagger | http://localhost:4000/api/docs |
 
-| Page | URL |
-|------|-----|
-| Portfolio | http://localhost:3000 |
-| Login | http://localhost:3000/login |
-| Control Panel | http://localhost:3000/dashboard |
+## Features
 
-## Git-synced inventory
-
-Inventory lives in `inventory/` and is tracked by git:
-
-```
-inventory/
-├── machines.json    # Lab PCs and servers
-├── proxies.json     # Proxy servers
-└── gateways.json    # Gateway profiles
-```
-
-### Workflow
-
-1. **Edit** machines in the dashboard (Machines tab) — saves to `inventory/machines.json` automatically.
-2. **Commit** to git:
-   ```powershell
-   npm run inventory:sync
-   ```
-   Or use **Settings → Commit Inventory to Git** in the dashboard.
-3. **Push** to share with your team:
-   ```powershell
-   git push
-   ```
-4. **Pull** on another machine to get the latest inventory:
-   ```powershell
-   git pull
-   npm run dev
-   ```
-
-## Project structure
-
-```
-myapp/
-├── inventory/       # Git-synced JSON inventory
-├── web/             # Next.js frontend + API
-├── doc/             # Architecture documentation
-└── package.json     # Root scripts (npm run dev)
-```
-
-## Push to GitHub (inventory included)
-
-Inventory is in git locally at `inventory/`. If it does not appear on GitHub, the repo was likely never pushed.
-
-```powershell
-cd "e:\Nabeel Data\myapp"
-
-# 1. Add your GitHub repo (replace with your URL)
-git remote add origin https://github.com/YOUR_USERNAME/myapp.git
-
-# 2. Push everything — including inventory/
-git push -u origin main
-```
-
-Verify before pushing:
-
-```powershell
-git ls-files inventory/
-# Should list: machines.json, proxies.json, gateways.json, README.md
-```
-
-If `git remote add` fails because origin exists, update the URL:
-
-```powershell
-git remote set-url origin https://github.com/YOUR_USERNAME/myapp.git
-git push -u origin main
-```
-
-After editing inventory in the dashboard, commit and push again:
-
-```powershell
-npm run inventory:sync
-git push
-```
+| Area | Status |
+|------|--------|
+| Control panel + 3D UI theme | ✅ |
+| Git-synced inventory | ✅ |
+| NestJS API + Prisma | ✅ Scaffold |
+| PostgreSQL + Redis (Docker) | ✅ |
+| Go LAN agent | ✅ Skeleton |
+| 3D topology reports (R3F) | ✅ |
+| Keycloak MFA / SSO | 📋 Phase E2 |
+| Multi-tenant commercial | 📋 Phase E4 |
 
 ## Documentation
 
-See [doc/00-index.md](./doc/00-index.md) for the full step-by-step build guide.
+Full enterprise blueprint: [doc/00-index.md](./doc/00-index.md)
+
+| Doc | Topic |
+|-----|-------|
+| [10-enterprise-architecture.md](./doc/10-enterprise-architecture.md) | Commercial v2 design |
+| [11-enterprise-tech-stack.md](./doc/11-enterprise-tech-stack.md) | Latest stable stack |
+| [12-security-model.md](./doc/12-security-model.md) | Security controls |
+| [13-3d-reporting.md](./doc/13-3d-reporting.md) | 3D report specs |
+| [14-build-roadmap.md](./doc/14-build-roadmap.md) | Build phases |
+
+## Commercial tiers
+
+| Tier | Machines | Features |
+|------|----------|----------|
+| Community | 100 | Monitor, inventory, git sync |
+| Pro | 5,000 | 3D reports, alerting, RBAC |
+| Enterprise | 50,000+ | SSO, MFA, mTLS, HA, Vault |
+
+## Repo structure
+
+```
+myapp/
+├── apps/web/           → web/ (Next.js)
+├── services/api/       NestJS + Prisma
+├── services/agent/     Go network agent
+├── inventory/          Git-synced JSON
+├── docker-compose.yml  Postgres + Redis
+└── doc/                Architecture docs
+```

@@ -7,15 +7,27 @@ import {
   saveSyncConfig,
   syncInventoryToGit,
 } from "@/lib/api";
+import {
+  activateLicenseKey,
+  TIER_COLORS,
+  type ActiveLicense,
+} from "@/lib/licensing";
+import { DEV_LICENSE_KEYS } from "../../../packages/shared/src/licensing";
 import { SectionHeader } from "../ui";
-import { GitBranch, Loader2, RefreshCw } from "lucide-react";
+import { GitBranch, Key, Loader2, RefreshCw, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { GatewayProfile } from "@/lib/types";
 
 export function SettingsTab({
   onSyncMessage,
+  license,
+  onLicenseChange,
+  hideLicensePanel = false,
 }: {
   onSyncMessage?: (msg: string | null) => void;
+  license?: ActiveLicense | null;
+  onLicenseChange?: (l: ActiveLicense) => void;
+  hideLicensePanel?: boolean;
 }) {
   const [pingInterval, setPingInterval] = useState("30");
   const [alertThreshold, setAlertThreshold] = useState("5");
@@ -24,6 +36,8 @@ export function SettingsTab({
   const [autoSync, setAutoSync] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
+  const [licenseKeyInput, setLicenseKeyInput] = useState("");
+  const [activating, setActivating] = useState(false);
 
   useEffect(() => {
     fetchGateways().then(setGateways).catch(() => {});
@@ -49,6 +63,21 @@ export function SettingsTab({
     }
   };
 
+  const handleActivateLicense = async () => {
+    if (!licenseKeyInput.trim()) return;
+    setActivating(true);
+    try {
+      const lic = await activateLicenseKey(licenseKeyInput);
+      onLicenseChange?.(lic);
+      onSyncMessage?.(`License activated: ${lic.tierName}`);
+      setLicenseKeyInput("");
+    } catch (err) {
+      onSyncMessage?.(err instanceof Error ? err.message : "Activation failed");
+    } finally {
+      setActivating(false);
+    }
+  };
+
   const handleGitSync = async () => {
     setSyncing(true);
     setSyncResult(null);
@@ -65,12 +94,79 @@ export function SettingsTab({
 
   return (
     <div className="space-y-6">
-      <SectionHeader
-        title="Settings"
-        description="Platform configuration, users, and gateway profiles."
-      />
+      {!hideLicensePanel && (
+        <SectionHeader
+          title="Settings"
+          description="Platform configuration, users, and gateway profiles."
+        />
+      )}
 
       <div className="grid gap-5 lg:grid-cols-2">
+        {/* License */}
+        {!hideLicensePanel && (
+        <div className="card space-y-4 lg:col-span-2">
+          <h3 className="flex items-center gap-2 font-medium">
+            <Key className="h-4 w-4 text-accent" />
+            License & Modules
+          </h3>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-xl border border-[rgba(139,92,246,0.2)] bg-surface/50 p-4">
+              <div className="text-xs text-[var(--muted)]">Active License</div>
+              <div className={`mt-1 text-xl font-bold ${TIER_COLORS[license?.tierKey ?? "LICENSEA"]}`}>
+                <Shield className="mr-1 inline h-4 w-4" />
+                {license?.tierName ?? "Starter"} ({license?.tierKey ?? "LICENSEA"})
+              </div>
+              <div className="mt-1 text-sm text-[var(--muted)]">{license?.tagline}</div>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                <div>Machines: <span className="text-accent">{license?.limits.maxMachines ?? 10}</span></div>
+                <div>Users: <span className="text-accent">{license?.limits.maxUsers ?? 2}</span></div>
+                <div>Agents: <span className="text-accent">{license?.limits.maxAgents ?? 1}</span></div>
+                <div>Modules: <span className="text-accent">{license?.modules.length ?? 4}</span></div>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <label className="label-field">Activate License Key</label>
+              <input
+                className="input-field font-mono text-xs"
+                placeholder="MYAPP-LICENSEZ-DEV-ENTERPRISE-001"
+                value={licenseKeyInput}
+                onChange={(e) => setLicenseKeyInput(e.target.value)}
+              />
+              <button
+                className="btn-primary flex w-full items-center justify-center gap-2 text-sm"
+                onClick={handleActivateLicense}
+                disabled={activating}
+              >
+                {activating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Key className="h-4 w-4" />}
+                Activate License
+              </button>
+              <div className="text-xs text-[#5a6488]">
+                Dev keys:{" "}
+                {Object.values(DEV_LICENSE_KEYS).map((k) => (
+                  <button
+                    key={k}
+                    className="mr-2 text-accent hover:underline"
+                    onClick={() => setLicenseKeyInput(k)}
+                  >
+                    {k.split("-")[1]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {license?.modules.map((mod) => (
+              <span
+                key={mod}
+                className="rounded-full border border-accent/30 bg-accent-muted/30 px-2 py-0.5 text-xs text-accent"
+              >
+                {mod}
+              </span>
+            ))}
+          </div>
+        </div>
+        )}
+
         {/* Monitoring Settings */}
         <div className="card space-y-4">
           <h3 className="font-medium">Monitoring</h3>

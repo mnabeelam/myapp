@@ -1,4 +1,5 @@
 import type { TabId } from "@/lib/types";
+import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   Bell,
@@ -8,13 +9,14 @@ import {
   Server,
   Sliders,
   Zap,
+  BarChart3,
 } from "lucide-react";
-
-export const tabs: { id: TabId; label: string; icon: React.ElementType }[] = [
+export const tabs: { id: TabId; label: string; icon: LucideIcon }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "machines", label: "Machines", icon: Server },
   { id: "proxies", label: "Proxies", icon: Globe },
   { id: "control", label: "Control Panel", icon: Zap },
+  { id: "reports", label: "Reports 3D", icon: BarChart3 },
   { id: "alerts", label: "Alerts", icon: Bell },
   { id: "audit", label: "Audit Log", icon: ClipboardList },
   { id: "settings", label: "Settings", icon: Sliders },
@@ -32,9 +34,9 @@ export function StatusDot({ status }: { status: "up" | "down" | "unknown" }) {
 
 export function StatusBadge({ status }: { status: "up" | "down" | "unknown" }) {
   const colors = {
-    up: "bg-green-500/15 text-green-400 border-green-500/30",
-    down: "bg-red-500/15 text-red-400 border-red-500/30",
-    unknown: "bg-gray-500/15 text-gray-400 border-gray-500/30",
+    up: "badge-glow bg-emerald-500/15 text-emerald-300 border-emerald-400/40 shadow-[0_0_12px_rgba(52,211,153,0.2)]",
+    down: "badge-glow bg-red-500/15 text-red-300 border-red-400/40 shadow-[0_0_12px_rgba(248,113,113,0.2)]",
+    unknown: "badge-glow bg-gray-500/15 text-gray-400 border-gray-500/30",
   };
   return (
     <span
@@ -56,18 +58,18 @@ export function StatCard({
   label: string;
   value: string | number;
   sub?: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   color?: string;
 }) {
   return (
     <div className="card flex items-start gap-4">
-      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-muted ${color}`}>
-        <Icon className="h-5 w-5" />
+      <div className={`icon-3d h-11 w-11 shrink-0 ${color}`}>
+        <Icon className="h-5 w-5 text-accent" />
       </div>
       <div>
-        <div className="text-xs text-[#8b9cb3]">{label}</div>
-        <div className="text-2xl font-bold">{value}</div>
-        {sub && <div className="text-xs text-[#5a6a82]">{sub}</div>}
+        <div className="text-xs text-[var(--muted)]">{label}</div>
+        <div className="text-2xl font-extrabold text-gradient-dynamic">{value}</div>
+        {sub && <div className="text-xs text-[#5a6488]">{sub}</div>}
       </div>
     </div>
   );
@@ -85,9 +87,11 @@ export function SectionHeader({
   return (
     <div className="mb-5 flex items-start justify-between">
       <div>
-        <h2 className="text-lg font-semibold">{title}</h2>
+        <h2 className="text-lg font-semibold">
+          <span className="text-gradient-dynamic">{title}</span>
+        </h2>
         {description && (
-          <p className="mt-0.5 text-sm text-[#8b9cb3]">{description}</p>
+          <p className="mt-0.5 text-sm text-[var(--muted)]">{description}</p>
         )}
       </div>
       {action}

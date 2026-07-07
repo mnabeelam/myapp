@@ -59,9 +59,34 @@ export type TabId =
   | "machines"
   | "proxies"
   | "control"
+  | "reports"
   | "alerts"
   | "audit"
   | "settings";
+
+export interface TopologyNode3D {
+  id: string;
+  label: string;
+  ip?: string;
+  x: number;
+  y: number;
+  z: number;
+  status: string;
+  latencyMs?: number | null;
+  color: string;
+}
+
+export interface TopologyEdge3D {
+  from: string;
+  to: string;
+  type: string;
+}
+
+export interface Topology3DData {
+  nodes: TopologyNode3D[];
+  edges: TopologyEdge3D[];
+  meta: { generatedAt: string; machineCount: number };
+}
 
 export interface MachineFormData {
   hostname: string;

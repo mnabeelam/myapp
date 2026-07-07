@@ -1,14 +1,26 @@
 {
   "name": "myapp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Local lab network control panel with git-synced inventory",
+  "description": "Enterprise lab network control — monitor, operate, 3D report at scale",
   "scripts": {
     "dev": "npm run dev --prefix web",
+    "dev:api": "npm run dev --prefix services/api",
+    "dev:all": "concurrently \"npm run dev:api\" \"npm run dev\"",
     "build": "npm run build --prefix web",
+    "build:api": "npm run build --prefix services/api",
     "start": "npm run start --prefix web",
     "install:web": "npm install --prefix web",
+    "install:api": "npm install --prefix services/api",
+    "install:all": "npm run install:web && npm run install:api",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "npm run prisma:push --prefix services/api",
     "inventory:sync": "git add inventory/ && git commit -m \"sync: update inventory\"",
-    "git:status": "git ls-files inventory/ && git remote -v && git status"
+    "git:status": "git ls-files inventory/ && git remote -v && git status",
+    "agent:build": "cd services/agent && go build -o ../../bin/myapp-agent ./cmd/agent"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
   }
 }

@@ -19,9 +19,10 @@ interface Props {
   machines: Machine[];
   onMachinesChange: (machines: Machine[]) => void | Promise<void>;
   onAction: (action: string, target: string, details: string) => void;
+  maxMachines?: number;
 }
 
-export function MachinesTab({ machines, onMachinesChange, onAction }: Props) {
+export function MachinesTab({ machines, onMachinesChange, onAction, maxMachines }: Props) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<MachineFormData>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -42,6 +43,10 @@ export function MachinesTab({ machines, onMachinesChange, onAction }: Props) {
       );
       onAction("machine_edit", form.hostname, "Updated inventory record");
     } else {
+      if (maxMachines && machines.length >= maxMachines) {
+        alert(`Machine limit reached (${maxMachines}). Upgrade your license to add more.`);
+        return;
+      }
       const newMachine: Machine = {
         id: Date.now().toString(),
         ...form,
@@ -232,7 +237,7 @@ export function MachinesTab({ machines, onMachinesChange, onAction }: Props) {
         </form>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-[#2a3548]">
+      <div className="overflow-x-auto table-3d">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#2a3548] bg-surface-raised text-left text-xs uppercase tracking-wide text-[#8b9cb3]">
@@ -311,6 +316,9 @@ export function MachinesTab({ machines, onMachinesChange, onAction }: Props) {
       </div>
       <p className="mt-3 text-xs text-[#5a6a82]">
         Last checked: 30 seconds ago · Ping interval: 30s
+        {maxMachines && (
+          <> · Limit: {machines.length}/{maxMachines} machines</>
+        )}
       </p>
     </div>
   );

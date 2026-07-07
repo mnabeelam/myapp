@@ -1,6 +1,8 @@
 "use client";
 
 import type { Machine, Proxy } from "@/lib/types";
+import type { ActiveLicense } from "@/lib/licensing";
+import { hasModule } from "@/lib/licensing";
 import { gatewayProfiles as fallbackGateways } from "@/lib/data";
 import { SectionHeader } from "../ui";
 import { Globe, Network, Power, Wifi } from "lucide-react";
@@ -12,14 +14,18 @@ interface Props {
   machines: Machine[];
   proxies: Proxy[];
   onAction: (action: string, target: string, details: string) => void;
+  license?: ActiveLicense | null;
 }
 
-export function ControlPanelTab({ machines, proxies, onAction }: Props) {
+export function ControlPanelTab({ machines, proxies, onAction, license }: Props) {
   const [selectedMachine, setSelectedMachine] = useState("");
   const [selectedProxy, setSelectedProxy] = useState("");
   const [selectedGateway, setSelectedGateway] = useState("");
   const [targetIp, setTargetIp] = useState("");
   const [pingResult, setPingResult] = useState<string | null>(null);
+  const canShutdown = license ? hasModule(license, "M05") && license.tierKey !== "LICENSEA" : false;
+  const canGateway = license ? hasModule(license, "M07") : false;
+  const canProxy = license ? hasModule(license, "M06") : false;
   const [gateways, setGateways] = useState<GatewayProfile[]>(fallbackGateways);
 
   useEffect(() => {
@@ -155,8 +161,10 @@ export function ControlPanelTab({ machines, proxies, onAction }: Props) {
                 <Wifi className="h-3.5 w-3.5" /> Wake (WoL)
               </button>
               <button
-                className="btn-danger flex items-center justify-center gap-1.5 text-sm"
+                className="btn-danger flex items-center justify-center gap-1.5 text-sm disabled:opacity-40"
                 onClick={runShutdown}
+                disabled={!canShutdown}
+                title={!canShutdown ? "Requires LICENSEB or higher" : undefined}
               >
                 <Power className="h-3.5 w-3.5" /> Shutdown
               </button>
@@ -165,6 +173,7 @@ export function ControlPanelTab({ machines, proxies, onAction }: Props) {
         </div>
 
         {/* Proxy Control */}
+        {canProxy && (
         <div className="card">
           <div className="mb-4 flex items-center gap-2">
             <Globe className="h-4 w-4 text-accent" />
@@ -196,8 +205,10 @@ export function ControlPanelTab({ machines, proxies, onAction }: Props) {
             </button>
           </div>
         </div>
+        )}
 
         {/* Gateway Control */}
+        {canGateway && (
         <div className="card">
           <div className="mb-4 flex items-center gap-2">
             <Network className="h-4 w-4 text-accent" />
@@ -257,6 +268,7 @@ export function ControlPanelTab({ machines, proxies, onAction }: Props) {
             </button>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

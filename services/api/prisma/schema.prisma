@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  plan      String    @default("community")
+  createdAt DateTime  @default(now())
+  users     User[]
+  machines  Machine[]
+  auditLogs AuditLog[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(VIEWER)
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  VIEWER
+  OPERATOR
+  ADMIN
+  SUPERADMIN
+}
+
+model Machine {
+  id         String        @id @default(uuid())
+  hostname   String
+  ip         String
+  mac        String?
+  os         String        @default("linux")
+  role       String        @default("workstation")
+  tags       String[]
+  subnet     String
+  tenantId   String
+  tenant     Tenant        @relation(fields: [tenantId], references: [id])
+  status     MachineStatus @default(UNKNOWN)
+  latencyMs  Int?
+  lastSeenAt DateTime?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  metrics    PingMetric[]
+
+  @@unique([tenantId, hostname])
+  @@index([tenantId, status])
+}
+
+enum MachineStatus {
+  UP
+  DOWN
+  UNKNOWN
+}
+
+model PingMetric {
+  id         String   @id @default(uuid())
+  machineId  String
+  machine    Machine  @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  latencyMs  Int?
+  packetLoss Float    @default(0)
+  status     MachineStatus
+  recordedAt DateTime @default(now())
+
+  @@index([machineId, recordedAt(sort: Desc)])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  userId    String?
+  action    String
+  target    String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt(sort: Desc)])
+}
+
+model Agent {
+  id           String   @id @default(uuid())
+  name         String
+  siteId       String
+  version      String
+  lastHeartbeat DateTime?
+  status       String   @default("offline")
+  createdAt    DateTime @default(now())
+}

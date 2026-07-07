@@ -8,6 +8,7 @@ Lab machine and network inventory for **myapp**. These JSON files are the source
 | `proxies.json` | Proxy servers |
 | `gateways.json` | Gateway profiles |
 | `config.json` | Auto-sync to GitHub (on by default) |
+| `license.json` | Active license tier and key |
 
 ## Auto-sync (enabled)
 

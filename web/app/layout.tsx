@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { DynamicBackground } from "@/components/DynamicBackground";
 import "./globals.css";
 
 const inter = Inter({
@@ -14,7 +15,8 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "myapp — Local Network Control Panel",
-  description: "Local lab network monitoring and control with git-synced inventory",
+  description:
+    "Local lab network monitoring and control with git-synced inventory",
 };
 
 export default function RootLayout({
@@ -24,7 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrains.variable}`}>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <DynamicBackground />
+        {children}
+      </body>
     </html>
   );
 }
